@@ -65,14 +65,14 @@ public class UndirectedGraphTest {
 		assertFalse(graph.connect("C", "D", -1));
 	}
 
-	// Nedanstående kod är skriven i ett format för att beskriva grafer som
-	// heter dot och kan användas om ni vill ha en bild av den graf som
-	// nedanstående test använder. Det finns flera program och webbsidor man kan
-	// använda för att omvandla koden till en bild, bland annat
+	// Nedanstï¿½ende kod ï¿½r skriven i ett format fï¿½r att beskriva grafer som
+	// heter dot och kan anvï¿½ndas om ni vill ha en bild av den graf som
+	// nedanstï¿½ende test anvï¿½nder. Det finns flera program och webbsidor man kan
+	// anvï¿½nda fï¿½r att omvandla koden till en bild, bland annat
 	// http://sandbox.kidstrythisathome.com/erdos/
 
-	// Observera dock att vi kommer att köra testfall på andra och betydligt
-	// större grafer.
+	// Observera dock att vi kommer att kï¿½ra testfall pï¿½ andra och betydligt
+	// stï¿½rre grafer.
 
 	// @formatter:off
 	// graph G {
@@ -199,7 +199,7 @@ public class UndirectedGraphTest {
 		assertEquals(45, totalCost);
 	}
 
-	// Här börjar vi använda andra grafer
+	// Hï¿½r bï¿½rjar vi anvï¿½nda andra grafer
 
 	@Test
 	public void testMinimumSpanningTreeFromBook() {

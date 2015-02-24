@@ -70,12 +70,31 @@ public class MyUndirectedGraph<T> implements UndirectedGraph<T> {
 	@Override
 	public int getCost(T node1, T node2) {
 		// TODO Dijkstra's algorithm
-		return 0;
+		//return 0;
+		
+		List<T> path = depthFirstSearch(node1, node2);
+		
+		if(path.isEmpty()) return -1;
+		
+		int cost = 0;
+		
+		for (int i = 0; i < path.size() - (path.size() == 1 ? 0 : 1); i++) {
+			for (Entry<T, Integer> edge : nodes.get(path.get(i)).entrySet()) {
+				T next = i + 1 == path.size() ? path.get(i) : path.get(i + 1);
+				if(edge.getKey() == next){
+					cost += edge.getValue();
+					break;
+				}
+			}
+		}
+		
+		return cost;
 	}
 
 	@Override
 	public List<T> depthFirstSearch(T start, T end) {
 		// TODO This might be solvable with recursion. EDIT: Done..? Can't test it without getCost().
+		//		Problem: circular path gives infinite loop. Solution: private method that has a 'visited' list that's passed in the args.
 		List<T> list = new ArrayList<T>();
 		
 		if(start == end){

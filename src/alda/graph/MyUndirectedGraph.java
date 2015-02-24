@@ -1,5 +1,6 @@
 package alda.graph;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -76,8 +77,26 @@ public class MyUndirectedGraph<T> implements UndirectedGraph<T> {
 
 	@Override
 	public List<T> depthFirstSearch(T start, T end) {
-		// TODO This might be solvable with recursion. 
-		return null;
+		// TODO This might be solvable with recursion. EDIT: Done..? Can't test it without getCost().
+		List<T> list = new ArrayList<T>();
+		
+		if(start == end){
+			list.add(start);
+			return list;
+		}
+		
+		for (Entry<T, Integer> edge : nodes.get(start).entrySet()) {
+			T neighbour = edge.getKey();
+			
+			list.addAll(depthFirstSearch(neighbour, end));
+			
+			if(!list.isEmpty()){
+				list.add(neighbour);
+				break;
+			}
+		}
+		
+		return list;
 	}
 
 	@Override

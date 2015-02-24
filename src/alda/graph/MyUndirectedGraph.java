@@ -44,10 +44,8 @@ public class MyUndirectedGraph<T> implements UndirectedGraph<T> {
 		Map<T, Integer> node1Edges = nodes.get(node1);
 		Map<T, Integer> node2Edges = nodes.get(node2);
 		
-		if(node2Edges.containsKey(node1)){
-			node2Edges.put(node1, cost);
-			nodes.put(node2, node2Edges);
-		}
+		node2Edges.put(node1, cost);
+		nodes.put(node2, node2Edges);
 		
 		node1Edges.put(node2, cost);
 		nodes.put(node1, node1Edges);
@@ -85,14 +83,18 @@ public class MyUndirectedGraph<T> implements UndirectedGraph<T> {
 			return list;
 		}
 		
-		for (Entry<T, Integer> edge : nodes.get(start).entrySet()) {
-			T neighbour = edge.getKey();
-			
-			list.addAll(depthFirstSearch(neighbour, end));
-			
-			if(!list.isEmpty()){
-				list.add(neighbour);
-				break;
+		if(nodes.get(start) != null){
+			for (Entry<T, Integer> edge : nodes.get(start).entrySet()) {
+				T neighbour = edge.getKey();
+				
+				if(neighbour != start){		// Skip over looping edge.
+					list.addAll(depthFirstSearch(neighbour, end));
+					
+					if(!list.isEmpty()){
+						list.add(start);
+						break;
+					}
+				}
 			}
 		}
 		

@@ -10,7 +10,7 @@ import org.junit.*;
 
 public class UndirectedGraphTest {
 
-	UndirectedGraph<String> graph = new MyUndirectedGraph<>();
+	UndirectedGraph<String> graph = new MyUndirectedGraph<String>();
 
 	private void add(String... nodes) {
 		for (String node : nodes) {
@@ -114,7 +114,7 @@ public class UndirectedGraphTest {
 			previous = path.get(i);
 		}
 
-		Set<String> nodesInPath = new HashSet<>(path);
+		Set<String> nodesInPath = new HashSet<String>(path);
 		assertEquals(path.size(), nodesInPath.size());
 	}
 

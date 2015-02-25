@@ -85,39 +85,30 @@ public class MyUndirectedGraph<T> implements UndirectedGraph<T> {
 
 	@Override
 	public List<T> depthFirstSearch(T start, T end) {
-		ArrayList<T> visited=new ArrayList<T>();
-		if(start == end){
-			visited.add(start);
-			
-		}else {
-		dfs(start, end, visited);
-		}
+		ArrayList<T> visited = new ArrayList<T>();
+		depthFirstSearch(start, end, visited);
+		if (!visited.contains(end))
+			return new ArrayList<T>();
 		
 		return visited;
-		
-		// TODO This might be solvable with recursion. EDIT: Done..? Can't test it without getCost().
-		//		Problem: circular path gives infinite loop. Solution: private method that has a 'visited' list that's passed in the args.
-
 	}
 	
-	private void dfs(T start, T end, ArrayList<T> visited){
-		
-		if(nodes.get(start) != null){
-			for (Entry<T, Integer> edge : nodes.get(start).entrySet()) {
-				if(!visited.contains(edge)){
-					T neighbour = edge.getKey();
-				
-				//if(neighbour != start){		// Skip over looping edge.
-					visited.add(neighbour);
-					dfs(neighbour, end, visited);
-					//visited.addAll(depthFirstSearch(neighbour, end));
-					
-					//if(!visited.isEmpty()){
-						//visited.add(start);
-						//break;
-				//	}
-				}
+	private void depthFirstSearch(T start,T end, List<T> visited){
+			visited.add(start);
+			
+			for (Entry<T, Integer> edge : nodes.get(start).entrySet()){
+				if (!visited.contains(edge.getKey()) && !visited.contains(end))
+					depthFirstSearch(edge.getKey(), end, visited);
 			}
+			
+			removeWrong(visited);
+	}
+	
+	//ta bort vägar som inte leder nåt det
+	private void removeWrong(List<T> visited){
+		for (int i = visited.size()-1; i > 0; i--) {
+			if (!isConnected(visited.get(i), visited.get(i-1)))
+				visited.remove(i-1);
 		}
 	}
 

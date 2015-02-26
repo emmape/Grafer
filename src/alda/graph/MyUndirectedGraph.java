@@ -3,9 +3,12 @@ package alda.graph;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Queue;
+import java.util.Stack;
 
 public class MyUndirectedGraph<T> implements UndirectedGraph<T> {
 
@@ -121,15 +124,100 @@ public class MyUndirectedGraph<T> implements UndirectedGraph<T> {
 
 	@Override
 	public List<T> breadthFirstSearch(T start, T end) {
-		// TODO This could be solved using a queue (k�).
-		return null;
+		ArrayList<T> visited=new ArrayList<T>();
+		ArrayList<T> helaBredden=new ArrayList<T>();
+		Queue<T> queue=new LinkedList<T>();
+		queue.add(start);
+		helaBredden.add(start);
+		bfs( end, queue, visited, helaBredden);
+	
+		return visited;
+	}
+	private void bfs(T end, Queue<T> queue, ArrayList<T> visited, ArrayList<T> helaBredden){
+		
+		for(T b:helaBredden){
+			for (Entry<T, Integer> edge : nodes.get(b).entrySet()) {
+				if(!visited.contains(edge.getKey())){
+					queue.add(edge.getKey());	
+				}
+			}
+		}
+		helaBredden.clear();
+		boolean hittad=false;
+		while(!queue.isEmpty()){
+			T nod= queue.remove();
+			visited.add(nod);
+			helaBredden.add(nod);
+			if(nod==end){
+				hittad=true;
+				rensaVisited(visited);
+				break;
+			}	
+		}
+		if(hittad==false){
+			bfs(end, queue, visited, helaBredden);
+		}
+		
+
+	}
+	private void rensaVisited(ArrayList<T> visited){
+		for (int i = visited.size()-1; i > 0; i--) {
+			if (!isConnected(visited.get(i), visited.get(i-1))){
+				visited.remove(i-1);
+			}		
+		}
 	}
 
+	private boolean contains(T nod){
+		boolean exists=false;
+		
+		for (Entry<T, Map<T, Integer>> noden : nodes.entrySet()) {
+			if(noden.getKey()==nod){
+				exists=true;
+			}
+		}
+		
+		return exists;
+	}
+	
 	@Override
 	public UndirectedGraph<T> minimumSpanningTree() {
-		// TODO Solvable with Prim's algorithm, Kruskal's algorithm, etc.
-		return null;
+		MyUndirectedGraph<T> mst=new MyUndirectedGraph<T>(); //Tom undirected graph, ska fyllas på med spanningtree
+		Map<T, Map<T, Integer>> notVisited = nodes;//Kopia av grafen
+		
+		while(!notVisited.isEmpty()){
+			for (Entry<T, Map<T, Integer>> nod : nodes.entrySet()) {
+				if (!mst.contains(nod.getKey())){
+					mst.add(nod.getKey());
+					Integer minst=1000;
+					T smallestEdge=null;
+					for (Entry<T, Integer> edge : nodes.get(nod).entrySet()) {
+						if (edge.getValue()<minst){
+							minst=edge.getValue();
+							smallestEdge=edge.getKey();
+						}
+					}
+					if (smallestEdge!=null){
+						mst.add(smallestEdge);
+						mst.connect(nod.getKey(), smallestEdge, minst);
+						notVisited.remove(smallestEdge);
+					}
+					notVisited.remove(nod.getKey());
+					
+					
+				}
+			}
+		
+		}
+		
+		
+		
+		
+		return mst;
 	}
+	
+	
+
 	
 
 }

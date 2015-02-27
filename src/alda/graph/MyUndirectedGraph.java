@@ -12,9 +12,7 @@ import java.util.Queue;
 public class MyUndirectedGraph<T> implements UndirectedGraph<T> {
 
 	private Map<T, Map<T, Integer>> nodes = new HashMap<T, Map<T, Integer>>();
-	
 
-	
 	@Override
 	public int getNumberOfNodes() {
 		return nodes.size();
@@ -23,11 +21,10 @@ public class MyUndirectedGraph<T> implements UndirectedGraph<T> {
 	@Override
 	public int getNumberOfEdges() {
 		int total = 0;
-		
 		for (Entry<T, Map<T, Integer>> node : nodes.entrySet()) {
 			total += node.getValue().size();
 		}
-		
+
 		return total;
 	}
 
@@ -45,16 +42,16 @@ public class MyUndirectedGraph<T> implements UndirectedGraph<T> {
 	public boolean connect(T node1, T node2, int cost) {
 		if(nodes.containsKey(node1) == false || nodes.containsKey(node2) == false || cost <= 0)
 			return false;
-		
+
 		Map<T, Integer> node1Edges = nodes.get(node1);
 		Map<T, Integer> node2Edges = nodes.get(node2);
-		
+
 		node2Edges.put(node1, cost);
 		nodes.put(node2, node2Edges);
-		
+
 		node1Edges.put(node2, cost);
 		nodes.put(node1, node1Edges);
-		
+
 		return true;
 	}
 
@@ -62,13 +59,13 @@ public class MyUndirectedGraph<T> implements UndirectedGraph<T> {
 	public boolean isConnected(T node1, T node2) {
 		if(nodes.containsKey(node1) == false || nodes.containsKey(node2) == false)
 			return false;
-		
+
 		if(nodes.get(node1).containsKey(node2))
 			return true;
-		
+
 		if(nodes.get(node2).containsKey(node1))
 			return true;
-		
+
 		return false;
 	}
 
@@ -77,7 +74,7 @@ public class MyUndirectedGraph<T> implements UndirectedGraph<T> {
 		int cost = -1;
 		if(isConnected(node1, node2)){
 			for (Entry<T, Integer> edge : nodes.get(node1).entrySet()) {
-				if(edge.getKey()==node2){
+				if(edge.getKey()==node2 || edge.getKey().equals(node2)){
 					cost=edge.getValue();
 				}
 			}
@@ -89,84 +86,81 @@ public class MyUndirectedGraph<T> implements UndirectedGraph<T> {
 	public List<T> depthFirstSearch(T start, T end) {
 		ArrayList<T> visited = new ArrayList<T>();
 		ArrayList<T> via = new ArrayList<T>();
-		
+
 		dfs(start, end, visited, via);
-		
+
 		via.add(start);
 		Collections.reverse(via);
-		
+
 		if(via.contains(end)){
 			return via;
 		}
-		
 		return new ArrayList<T>();
 	}
-	
+
 	private boolean dfs(T start, T end, ArrayList<T> visited, ArrayList<T> via){
+		//Recursively makes a depth first search
 		visited.add(start);
 		if(start == end){
 			return true;
 		}
-		
 		if(nodes.get(start) != null)
-		for (Entry<T, Integer> edge : nodes.get(start).entrySet()) {
-			
-			if(!visited.contains(edge.getKey())){
-				if(dfs(edge.getKey(), end, visited, via)){
-					via.add(edge.getKey());
-					return true;
+			for (Entry<T, Integer> edge : nodes.get(start).entrySet()) {
+				if(!visited.contains(edge.getKey())){
+					if(dfs(edge.getKey(), end, visited, via)){
+						via.add(edge.getKey());
+						return true;
+					}
 				}
 			}
-		}
 		return false;
 	}
 
 	@Override
 	public List<T> breadthFirstSearch(T start, T end) {
 		ArrayList<T> visited=new ArrayList<T>();
-		ArrayList<T> helaBredden=new ArrayList<T>();
+		ArrayList<T> neighbours=new ArrayList<T>();
 		Queue<T> queue=new LinkedList<T>();
 		queue.add(start);
-		helaBredden.add(start);
-		bfs( end, queue, visited, helaBredden);
-	
+		neighbours.add(start);
+		bfs( end, queue, visited, neighbours);
 		return visited;
 	}
-	private void bfs(T end, Queue<T> queue, ArrayList<T> visited, ArrayList<T> helaBredden){
-		
-		for(T b:helaBredden){
-			for (Entry<T, Integer> edge : nodes.get(b).entrySet()) {
+	
+	private void bfs(T end, Queue<T> queue, ArrayList<T> visited, ArrayList<T> neighbours){
+		//Recursively makes a breadth first search
+		for(T node : neighbours){
+			for (Entry<T, Integer> edge : nodes.get(node).entrySet()) {
 				if(!visited.contains(edge.getKey())){
 					queue.add(edge.getKey());	
 				}
 			}
 		}
-		helaBredden.clear();
-		boolean hittad=false;
+		neighbours.clear();
+		boolean exists=false;
 		while(!queue.isEmpty()){
 			T nod= queue.remove();
 			visited.add(nod);
-			helaBredden.add(nod);
+			neighbours.add(nod);
 			if(nod==end){
-				hittad=true;
-				rensaVisited(visited);
+				exists=true;
+				purge(visited);
 				break;
 			}	
 		}
-		if(hittad==false){
-			bfs(end, queue, visited, helaBredden);
+		if(exists==false){
+			bfs(end, queue, visited, neighbours);
 		}
-		
-
 	}
-	private void rensaVisited(ArrayList<T> visited){
+	
+	private void purge(ArrayList<T> visited){
+	//Removes nodes that do not lead to the endnode
 		for (int i = visited.size()-1; i > 0; i--) {
-				if (!isConnected(visited.get(i), visited.get(i-1))){
-					visited.remove(i-1);
-				}	
-
-				
+			if (!isConnected(visited.get(i), visited.get(i-1))){
+				visited.remove(i-1);
+			}
 		}
+	//Removes nodes that takes a detour to the endnode
 		for (int j = visited.size()-1; j > 1; j--){
 			if (isConnected(visited.get(j), visited.get(j-2))){
 				visited.remove(j-1);
@@ -174,51 +168,45 @@ public class MyUndirectedGraph<T> implements UndirectedGraph<T> {
 		}
 	}
 
-	private boolean contains(T nod){
-		boolean exists=false;
-		
-		for (Entry<T, Map<T, Integer>> noden : nodes.entrySet()) {
-			if(noden.getKey()==nod){
-				exists=true;
-			}
-		}
-		
-		return exists;
-	}
-	
 	@Override
 	public UndirectedGraph<T> minimumSpanningTree() {
-		MyUndirectedGraph<T> mst=new MyUndirectedGraph<T>(); //Tom undirected graph, ska fyllas på med spanningtree
-		Map<T, Map<T, Integer>> notVisited = nodes;//Kopia av grafen
-		
-		while(!notVisited.isEmpty()){
-			for (Entry<T, Map<T, Integer>> nod : notVisited.entrySet()) {
-				
-				if (!mst.contains(nod.getKey())){
-					mst.add(nod.getKey());
-					Integer minst=Integer.MAX_VALUE;
-					T smallestEdge=null;
-					//for (Entry<T, Integer> edge : notVisited.get(nod).entrySet()) {
-					for (Entry<T, Integer> edge : nod.getValue().entrySet()) {
-						if (edge.getValue()<minst){
-							minst=edge.getValue();
-							smallestEdge=edge.getKey();
-						}
-					}
-					if (smallestEdge!=null){
-						mst.add(smallestEdge);
-						mst.connect(nod.getKey(), smallestEdge, minst);
-						//notVisited.remove(smallestEdge);
-					}	
-				}
-				notVisited.remove(nod.getKey());
-			}
-		}
+		MyUndirectedGraph<T> mst=new MyUndirectedGraph<T>(); 
+		ArrayList<T> visited=new ArrayList<T>();
+		Map.Entry<T, Map<T, Integer>> entry = nodes.entrySet().iterator().next();
+		mst.add(entry.getKey());
+		visited.add(entry.getKey());
+		mst(mst, visited);
+
 		return mst;
 	}
-	
-	
 
-	
+	private void mst(UndirectedGraph<T> mst, ArrayList<T> visited){
+		//Recursively build a minimum spanning tree
+		if (mst.getNumberOfNodes() < nodes.size()){ 
+			int minimum=Integer.MAX_VALUE;
+			T destination=null;
+			T node=null;
 
+			for(T visitedNode: visited){
+				for (Entry<T, Integer> edge : nodes.get(visitedNode).entrySet()) {
+					if (edge.getValue().intValue() < minimum && !visited.contains(edge.getKey())){
+						minimum=edge.getValue().intValue();
+						destination=edge.getKey();
+						node=visitedNode;
+					}
+				}
+			}
+			if(destination!=null){
+				mst.add(destination);
+				mst.connect(node, destination, minimum);	
+			}
+			visited.add(destination);
+
+			mst(mst, visited);
+		}else{
+			return;
+		}
+	}
 }
+
+

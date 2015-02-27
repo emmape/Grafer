@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Queue;
-import java.util.Stack;
 
 public class MyUndirectedGraph<T> implements UndirectedGraph<T> {
 
@@ -162,9 +161,16 @@ public class MyUndirectedGraph<T> implements UndirectedGraph<T> {
 	}
 	private void rensaVisited(ArrayList<T> visited){
 		for (int i = visited.size()-1; i > 0; i--) {
-			if (!isConnected(visited.get(i), visited.get(i-1))){
-				visited.remove(i-1);
-			}		
+				if (!isConnected(visited.get(i), visited.get(i-1))){
+					visited.remove(i-1);
+				}	
+
+				
+		}
+		for (int j = visited.size()-1; j > 1; j--){
+			if (isConnected(visited.get(j), visited.get(j-2))){
+				visited.remove(j-1);
+			}
 		}
 	}
 
@@ -186,12 +192,14 @@ public class MyUndirectedGraph<T> implements UndirectedGraph<T> {
 		Map<T, Map<T, Integer>> notVisited = nodes;//Kopia av grafen
 		
 		while(!notVisited.isEmpty()){
-			for (Entry<T, Map<T, Integer>> nod : nodes.entrySet()) {
+			for (Entry<T, Map<T, Integer>> nod : notVisited.entrySet()) {
+				
 				if (!mst.contains(nod.getKey())){
 					mst.add(nod.getKey());
-					Integer minst=1000;
+					Integer minst=Integer.MAX_VALUE;
 					T smallestEdge=null;
-					for (Entry<T, Integer> edge : nodes.get(nod).entrySet()) {
+					//for (Entry<T, Integer> edge : notVisited.get(nod).entrySet()) {
+					for (Entry<T, Integer> edge : nod.getValue().entrySet()) {
 						if (edge.getValue()<minst){
 							minst=edge.getValue();
 							smallestEdge=edge.getKey();
@@ -200,19 +208,12 @@ public class MyUndirectedGraph<T> implements UndirectedGraph<T> {
 					if (smallestEdge!=null){
 						mst.add(smallestEdge);
 						mst.connect(nod.getKey(), smallestEdge, minst);
-						notVisited.remove(smallestEdge);
-					}
-					notVisited.remove(nod.getKey());
-					
-					
+						//notVisited.remove(smallestEdge);
+					}	
 				}
+				notVisited.remove(nod.getKey());
 			}
-		
 		}
-		
-		
-		
-		
 		return mst;
 	}
 	
